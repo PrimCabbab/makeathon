@@ -1,33 +1,139 @@
 ---
 import Layout from '../layouts/Layout.astro';
-const posts = [
-  { who: 'Teen, 15', text: 'We agreed phones charge in the kitchen at night. Sleep got better in a week.' },
-  { who: 'Parent', text: 'Asking "what is the funniest thing you saw online today?" got my son talking.' },
-  { who: 'Teen, 16', text: 'I muted a group chat that was getting nasty and told a friend why. It helped.' },
-];
+const topics = ['Cyberbullying', 'Safe contact', 'Privacy', 'Screen time', 'Healthy gaming', 'Misinformation'];
 ---
 <Layout title="Community">
-  <section class="pagehead"><div class="wrap"><h1>Community</h1><p>Real tips from teens and parents. Be kind. Don't share names, schools or locations.</p></div></section>
-  <section class="sec"><div class="wrap">
-    <div class="grid3" id="posts">
-      {posts.map(p => <div class="card"><p>{p.text}</p><p style="margin-top:.8rem;font-weight:600">{p.who}</p></div>)}
-    </div>
-    <h2 style="margin:3rem 0 1rem">Share a tip</h2>
-    <form id="tip" style="max-width:560px">
-      <label for="role">I am a</label>
-      <select id="role"><option>Teen</option><option>Parent</option></select>
-      <label for="msg">Your tip</label><textarea id="msg" rows="4" maxlength="240" required></textarea>
-      <p style="margin-top:1rem"><button class="btn">Post tip</button></p>
-    </form>
-  </div></section>
+  <section class="pagehead"><div class="wrap"><h1>Community</h1><p>Real talk from teens and parents. Vote, comment and share what worked for you.</p></div></section>
+
+  <div class="wrap rd">
+    <aside class="rd-side" aria-label="Topics">
+      <button class="btn" id="open-new" style="width:100%">Create post</button>
+      <h3>Topics</h3>
+      <ul id="topics">
+        <li><button class="topic" data-t="All" aria-pressed="true">All posts</button></li>
+        {topics.map(t => <li><button class="topic" data-t={t} aria-pressed="false">{t}</button></li>)}
+      </ul>
+    </aside>
+
+    <main class="rd-main">
+      <div class="tags" role="group" aria-label="Sort posts">
+        <button class="tag" data-sort="hot" aria-pressed="true">Hot</button>
+        <button class="tag" data-sort="new" aria-pressed="false">New</button>
+        <button class="tag" data-sort="top" aria-pressed="false">Top</button>
+      </div>
+
+      <form id="new" class="card" hidden>
+        <label for="n-topic">Topic</label>
+        <select id="n-topic">{topics.map(t => <option>{t}</option>)}</select>
+        <label for="n-title">Title</label>
+        <input id="n-title" maxlength="120" required />
+        <label for="n-body">What happened? What helped?</label>
+        <textarea id="n-body" rows="4" maxlength="500"></textarea>
+        <p class="note">Posting as a random username. Don't share real names, schools or locations.</p>
+        <p style="margin-top:.8rem"><button class="btn">Post</button> <button type="button" class="btn alt" id="cancel">Cancel</button></p>
+      </form>
+
+      <div id="feed"></div>
+    </main>
+
+    <aside class="rd-side">
+      <div class="card">
+        <h3>Community rules</h3>
+        <ol>
+          <li>Be kind. No bullying.</li>
+          <li>No real names, schools or locations.</li>
+          <li>No pressure to share photos or move chats.</li>
+          <li>Need urgent help? Tell a trusted adult.</li>
+        </ol>
+      </div>
+    </aside>
+  </div>
+
+  <style is:global>
+    .rd{display:grid;grid-template-columns:210px 1fr 260px;gap:1.5rem;padding-block:2rem}
+    .rd-side h3{margin:1.2rem 0 .6rem;font-size:1.3rem}
+    .rd-side ul{list-style:none;padding:0}
+    .rd-side ol{padding-left:1.2rem;margin-top:.6rem;font-size:.95rem}
+    .topic{width:100%;text-align:left;background:none;border:0;font:inherit;padding:.5rem .8rem;border-radius:8px;cursor:pointer;color:var(--ink)}
+    .topic:hover{background:var(--cream-soft)}
+    .topic[aria-pressed="true"]{background:var(--teal);color:var(--cream)}
+    .post{display:grid;grid-template-columns:56px 1fr;background:var(--cream-soft);border:2px solid var(--teal);border-radius:14px;margin-bottom:1rem;overflow:hidden}
+    .votes{background:#e4dbb0;display:flex;flex-direction:column;align-items:center;padding:.6rem 0;gap:.2rem;font-weight:600}
+    .vote{background:none;border:0;cursor:pointer;font-size:1.2rem;color:var(--teal-dark);padding:.1rem .5rem;border-radius:6px}
+    .vote[aria-pressed="true"]{color:var(--orange);background:var(--teal-dark)}
+    .pbody{padding:1rem 1.2rem}
+    .meta{font-size:.85rem;color:var(--teal-dark)}
+    .pbody h3{font-size:1.4rem;margin:.3rem 0}
+    .pbody p{margin:.3rem 0}
+    .pact{margin-top:.6rem}
+    .link{background:none;border:0;font:inherit;font-weight:600;color:var(--teal-dark);cursor:pointer;text-decoration:underline;padding:0}
+    .comments{margin-top:.8rem;border-left:3px solid var(--orange);padding-left:1rem}
+    .comment{margin:.6rem 0}
+    .cform{display:flex;gap:.5rem;margin-top:.6rem}
+    .note{font-size:.85rem}
+    @media(max-width:900px){.rd{grid-template-columns:1fr}}
+  </style>
+
   <script is:inline>
-    // Demo only: posts appear on the page but are not saved.
-    document.getElementById('tip').addEventListener('submit', function (e) {
+    // Demo only: everything lives in memory and resets on refresh.
+    var adj = ['Calm', 'Brave', 'Sunny', 'Curious', 'Kind', 'Quiet'], noun = ['Otter', 'Falcon', 'Panda', 'Comet', 'Maple', 'Heron'];
+    function name() { return adj[Math.floor(Math.random() * 6)] + noun[Math.floor(Math.random() * 6)] + Math.floor(Math.random() * 90 + 10); }
+    var now = Date.now();
+    var posts = [
+      { id: 1, topic: 'Screen time', title: 'Phones charge in the kitchen at night. Sleep got way better', body: 'We agreed on it as a family so it was not just me being told off. Week one was hard, week two was fine.', author: 'CalmOtter42', votes: 24, t: now - 3600e3 * 5, comments: [{ a: 'KindHeron17', c: 'We do this too. Using a real alarm clock helped.' }] },
+      { id: 2, topic: 'Cyberbullying', title: 'I muted a nasty group chat and told a friend why', body: 'Felt scary but she said thanks. Others followed.', author: 'BraveFalcon88', votes: 41, t: now - 3600e3 * 20, comments: [] },
+      { id: 3, topic: 'Safe contact', title: 'Parent here: how do I bring up online strangers without a lecture?', body: 'Asking "what is the funniest thing you saw online today?" got my son talking. Other ideas?', author: 'Parent_SunnyMaple', votes: 17, t: now - 3600e3 * 2, comments: [{ a: 'CuriousComet31', c: 'Ask what you would do, not what I should do.' }, { a: 'QuietPanda56', c: 'Honestly just being calm when we tell you helps a lot.' }] }
+    ];
+    var topic = 'All', sort = 'hot', mine = {}, me = name();
+    var $ = function (s) { return document.querySelector(s); };
+    function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+    function ago(t) { var h = Math.round((Date.now() - t) / 3600e3); return h < 1 ? 'just now' : h < 24 ? h + 'h ago' : Math.round(h / 24) + 'd ago'; }
+    function score(p) { return p.votes + (mine[p.id] || 0); }
+    function render() {
+      var list = posts.filter(function (p) { return topic === 'All' || p.topic === topic; });
+      list.sort(function (a, b) {
+        if (sort === 'new') return b.t - a.t;
+        if (sort === 'top') return score(b) - score(a);
+        return (score(b) + 1) / Math.pow((Date.now() - b.t) / 3600e3 + 2, 1.5) - (score(a) + 1) / Math.pow((Date.now() - a.t) / 3600e3 + 2, 1.5);
+      });
+      var feed = $('#feed'); feed.innerHTML = '';
+      if (!list.length) feed.append(el('p', '', 'No posts here yet. Be the first to share.'));
+      list.forEach(function (p) {
+        var art = el('article', 'post'), v = el('div', 'votes');
+        var up = el('button', 'vote', '▲'), dn = el('button', 'vote', '▼'), n = el('span', '', String(score(p)));
+        up.setAttribute('aria-label', 'Upvote'); dn.setAttribute('aria-label', 'Downvote');
+        up.setAttribute('aria-pressed', String(mine[p.id] === 1)); dn.setAttribute('aria-pressed', String(mine[p.id] === -1));
+        up.onclick = function () { mine[p.id] = mine[p.id] === 1 ? 0 : 1; render(); };
+        dn.onclick = function () { mine[p.id] = mine[p.id] === -1 ? 0 : -1; render(); };
+        v.append(up, n, dn);
+        var b = el('div', 'pbody');
+        b.append(el('div', 'meta', p.topic + ' · Posted by ' + p.author + ' · ' + ago(p.t)), el('h3', '', p.title));
+        if (p.body) b.append(el('p', '', p.body));
+        var open = el('button', 'link', p.comments.length + (p.comments.length === 1 ? ' comment' : ' comments'));
+        var act = el('div', 'pact'); act.append(open); b.append(act);
+        var box = el('div', 'comments'); box.hidden = !p.open; b.append(box);
+        p.comments.forEach(function (c) { var d = el('div', 'comment'); d.append(el('div', 'meta', c.a), el('p', '', c.c)); box.append(d); });
+        var f = el('form', 'cform'), inp = el('input'); inp.placeholder = 'Add a comment'; inp.maxLength = 240; inp.required = true; inp.setAttribute('aria-label', 'Add a comment');
+        var sb = el('button', 'btn alt', 'Reply'); f.append(inp, sb);
+        f.onsubmit = function (e) { e.preventDefault(); p.comments.push({ a: me, c: inp.value }); p.open = true; render(); };
+        box.append(f);
+        open.onclick = function () { p.open = !p.open; box.hidden = !p.open; };
+        art.append(v, b); feed.append(art);
+      });
+    }
+    document.querySelectorAll('.topic').forEach(function (b) { b.onclick = function () {
+      topic = b.dataset.t; document.querySelectorAll('.topic').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); render(); }; });
+    document.querySelectorAll('[data-sort]').forEach(function (b) { b.onclick = function () {
+      sort = b.dataset.sort; document.querySelectorAll('[data-sort]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); render(); }; });
+    $('#open-new').onclick = function () { $('#new').hidden = false; $('#n-title').focus(); };
+    $('#cancel').onclick = function () { $('#new').hidden = true; };
+    $('#new').onsubmit = function (e) {
       e.preventDefault();
-      var card = document.createElement('div'); card.className = 'card';
-      var p = document.createElement('p'); p.textContent = document.getElementById('msg').value;
-      var w = document.createElement('p'); w.style.cssText = 'margin-top:.8rem;font-weight:600'; w.textContent = document.getElementById('role').value;
-      card.append(p, w); document.getElementById('posts').prepend(card); e.target.reset();
-    });
+      posts.push({ id: Date.now(), topic: $('#n-topic').value, title: $('#n-title').value, body: $('#n-body').value, author: me, votes: 1, t: Date.now(), comments: [] });
+      e.target.reset(); e.target.hidden = true; sort = 'new';
+      document.querySelectorAll('[data-sort]').forEach(function (x) { x.setAttribute('aria-pressed', String(x.dataset.sort === 'new')); });
+      render();
+    };
+    render();
   </script>
 </Layout>
