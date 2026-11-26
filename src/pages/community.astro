@@ -1,0 +1,33 @@
+---
+import Layout from '../layouts/Layout.astro';
+const posts = [
+  { who: 'Teen, 15', text: 'We agreed phones charge in the kitchen at night. Sleep got better in a week.' },
+  { who: 'Parent', text: 'Asking "what is the funniest thing you saw online today?" got my son talking.' },
+  { who: 'Teen, 16', text: 'I muted a group chat that was getting nasty and told a friend why. It helped.' },
+];
+---
+<Layout title="Community">
+  <section class="pagehead"><div class="wrap"><h1>Community</h1><p>Real tips from teens and parents. Be kind. Don't share names, schools or locations.</p></div></section>
+  <section class="sec"><div class="wrap">
+    <div class="grid3" id="posts">
+      {posts.map(p => <div class="card"><p>{p.text}</p><p style="margin-top:.8rem;font-weight:600">{p.who}</p></div>)}
+    </div>
+    <h2 style="margin:3rem 0 1rem">Share a tip</h2>
+    <form id="tip" style="max-width:560px">
+      <label for="role">I am a</label>
+      <select id="role"><option>Teen</option><option>Parent</option></select>
+      <label for="msg">Your tip</label><textarea id="msg" rows="4" maxlength="240" required></textarea>
+      <p style="margin-top:1rem"><button class="btn">Post tip</button></p>
+    </form>
+  </div></section>
+  <script is:inline>
+    // Demo only: posts appear on the page but are not saved.
+    document.getElementById('tip').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var card = document.createElement('div'); card.className = 'card';
+      var p = document.createElement('p'); p.textContent = document.getElementById('msg').value;
+      var w = document.createElement('p'); w.style.cssText = 'margin-top:.8rem;font-weight:600'; w.textContent = document.getElementById('role').value;
+      card.append(p, w); document.getElementById('posts').prepend(card); e.target.reset();
+    });
+  </script>
+</Layout>

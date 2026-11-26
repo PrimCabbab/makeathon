@@ -1,0 +1,82 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { videos } from '../data/videos.js';
+// EDIT THE STORY HERE. art: file in /public/art, e.g. '/art/scene1.png' ('' shows the placeholder).
+// ok:true = the right choice. fail = message shown on the wrong-choice screen; topic picks the 3 recommended videos.
+const scenes = [
+  { title: 'Scene 1: Introduction', art: '', context: "Maya is 15. It's Friday night and her group chat is lighting up. Someone has posted an embarrassing photo of a classmate, and everyone is adding laughing emojis.", question: 'What does Maya do?',
+    choices: [
+      { t: 'Add a laughing emoji, everyone else is', ok: false, fail: 'Joining in makes the hurt bigger for the person in the photo.', topic: 'Cyberbullying' },
+      { t: 'Message the classmate privately to check in', ok: true },
+      { t: 'Ignore it and say nothing', ok: false, fail: 'Staying silent can feel safe, but the photo stays up and the classmate may feel alone.', topic: 'Cyberbullying' } ] },
+  { title: 'Scene 2', art: '', context: 'Later, in an online game, a player Maya has never met says she is really good and asks her to move to a private chat app.', question: 'What should Maya do?',
+    choices: [
+      { t: 'Move to the private chat, they seem nice', ok: false, fail: 'Moving to a private space is a common way strangers get around safety tools.', topic: 'Safe contact' },
+      { t: 'Say no, stay in the game chat and tell a parent', ok: true },
+      { t: 'Give them her username to see what happens', ok: false, fail: 'Sharing even a username gives a stranger a way to find more about you.', topic: 'Safe contact' } ] },
+  { title: 'Scene 3', art: '', context: 'A giveaway post says: "Win a free skin! Reply with your full name, school and town."', question: 'What is the smartest move?',
+    choices: [
+      { t: 'Reply with everything, it is free stuff', ok: false, fail: 'Name, school and town together make it easy to locate you.', topic: 'Privacy' },
+      { t: 'Reply with just a first name', ok: false, fail: 'Small details add up, and most giveaways like this are scams.', topic: 'Privacy' },
+      { t: 'Skip it and report the post', ok: true } ] },
+  { title: 'Scene 4', art: '', context: "It's 1am. Maya is still scrolling when her mum knocks and says it's late. Maya is annoyed and they start to argue about screen time.", question: 'How can they sort this out?',
+    choices: [
+      { t: 'Hide the phone under the covers', ok: false, fail: 'Hiding it keeps the argument going and costs sleep.', topic: 'Screen time' },
+      { t: 'Sit down and agree on phone-free hours together', ok: true },
+      { t: 'Shout that it is her phone', ok: false, fail: 'Arguments make both sides defensive. A calm chat works better.', topic: 'Screen time' } ] },
+  { title: 'Scene 5: Ending', art: '', ending: true, context: 'Maya checked in on her classmate, kept a stranger out, protected her details and made a screen-time deal with her mum. Small choices, big difference.', question: '', choices: [] },
+];
+---
+<Layout title="Digital story" bodyClass="story-body">
+  <main class="story">
+    <div class="story-art" id="art"></div>
+    <div class="story-panel">
+      <div class="progress" id="progress" aria-hidden="true"></div>
+      <div class="ctx" id="ctx" aria-live="polite"></div>
+      <div class="q" id="q"></div>
+      <div id="choices" style="display:grid;gap:.8rem"></div>
+    </div>
+  </main>
+
+  <div class="fail" id="fail" role="alertdialog" aria-labelledby="fail-t">
+    <div class="fail-box">
+      <h2 id="fail-t">You picked the wrong choice</h2>
+      <p id="fail-msg"></p>
+      <h3 style="margin-top:1.5rem">Recommended videos</h3>
+      <div class="rec" id="rec"></div>
+      <button class="btn" id="retry">Try again</button>
+    </div>
+  </div>
+
+  <script is:inline define:vars={{ scenes, videos }}>
+    var i = 0;
+    var $ = function (id) { return document.getElementById(id); };
+    function render() {
+      var s = scenes[i];
+      $('art').innerHTML = s.art ? '<img src="' + s.art + '" alt="">' : '<div class="art-ph">Art here<br><small>' + s.title + '</small></div>';
+      $('progress').innerHTML = scenes.map(function (_, n) { return '<span class="' + (n <= i ? 'on' : '') + '"></span>'; }).join('');
+      $('ctx').innerHTML = '<small>' + s.title + '</small><p>' + s.context + '</p>';
+      $('q').textContent = s.ending ? 'The end' : s.question;
+      $('choices').innerHTML = '';
+      if (s.ending) {
+        var a = document.createElement('a'); a.className = 'btn'; a.href = '/videos'; a.textContent = 'Watch recommended videos'; a.style.textAlign = 'center';
+        var b = document.createElement('button'); b.className = 'choice'; b.textContent = 'Play again';
+        b.onclick = function () { i = 0; render(); };
+        $('choices').append(a, b); return;
+      }
+      s.choices.forEach(function (c) {
+        var b = document.createElement('button'); b.className = 'choice'; b.textContent = c.t;
+        b.onclick = function () { if (c.ok) { i++; render(); } else fail(c); };
+        $('choices').append(b);
+      });
+    }
+    function fail(c) {
+      $('fail-msg').textContent = c.fail;
+      var rec = videos.filter(function (v) { return v.topic === c.topic; }).concat(videos.filter(function (v) { return v.topic !== c.topic; })).slice(0, 3);
+      $('rec').innerHTML = rec.map(function (v) { return '<a href="' + v.url + '"><div class="thumb">▶</div><small>' + v.title + '</small></a>'; }).join('');
+      $('fail').classList.add('show'); $('retry').focus();
+    }
+    $('retry').onclick = function () { $('fail').classList.remove('show'); };
+    render();
+  </script>
+</Layout>

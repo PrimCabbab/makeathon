@@ -1,0 +1,27 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { videos } from '../data/videos.js';
+const topics = ['All', ...new Set(videos.map(v => v.topic))];
+---
+<Layout title="Recommended videos">
+  <section class="pagehead"><div class="wrap"><h1>Recommended videos</h1><p>Watch together or on your own. Pick a topic to filter.</p></div></section>
+  <section class="sec"><div class="wrap">
+    <div class="tags" role="group" aria-label="Filter by topic">
+      {topics.map((t, i) => <button class="tag" data-topic={t} aria-pressed={i === 0 ? 'true' : 'false'}>{t}</button>)}
+    </div>
+    <div class="grid3">
+      {videos.map(v => (
+        <a class="card vid" href={v.url} data-topic={v.topic} style="text-decoration:none">
+          <div class="thumb">▶</div><h3>{v.title}</h3><p>{v.topic}</p>
+        </a>
+      ))}
+    </div>
+  </div></section>
+  <script>
+    const tags = document.querySelectorAll<HTMLElement>('.tag'), vids = document.querySelectorAll<HTMLElement>('.vid');
+    tags.forEach(t => t.addEventListener('click', () => {
+      tags.forEach(x => x.setAttribute('aria-pressed', String(x === t)));
+      vids.forEach(v => v.style.display = t.dataset.topic === 'All' || v.dataset.topic === t.dataset.topic ? '' : 'none');
+    }));
+  </script>
+</Layout>

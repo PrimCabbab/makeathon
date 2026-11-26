@@ -1,0 +1,43 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Wave from '../components/Wave.astro';
+import Sparkle from '../components/Sparkle.astro';
+---
+<Layout title="Home">
+  <section class="hero"><div class="wrap">
+    <!-- Swap these placeholder SVGs for your hand-drawn illustrations (put files in /public/art) -->
+    <div aria-hidden="true">
+      <svg class="art" viewBox="0 0 400 320"><rect x="70" y="60" width="260" height="170" rx="16" fill="#006269" stroke="#f0e8c6" stroke-width="5"/><path d="M230 100a45 45 0 1 0 20 70 36 36 0 1 1-20-70z" fill="#ffa600"/><rect x="40" y="235" width="320" height="30" rx="10" fill="#f0e8c6"/><path d="M40 40l8 18 18 8-18 8-8 18-8-18-18-8 18-8z" fill="#ffa600"/><path d="M350 20l6 14 14 6-14 6-6 14-6-14-14-6 14-6z" fill="#f0e8c6"/></svg>
+    </div>
+    <div>
+      <h1>Find your footing online</h1>
+      <h2>Digital habits teens and parents build together</h2>
+      <p>Eudae turns tricky online moments into stories you can play through, videos you can watch together, and a community that gets it.</p>
+      <a class="btn" href="/story">Play the story</a>
+    </div>
+  </div></section>
+  <Wave from="#00857d" to="#f0e8c6" />
+
+  <section class="about sec"><div class="wrap">
+    <div>
+      <h2>Be the real version of yourself, online too</h2>
+      <p>Every choice online has a ripple. Eudae helps teens practise the tough calls (group chats, strangers, what to share) in a safe space, and gives parents the words to talk about it without the lecture.</p>
+      <a class="btn alt" href="/community">Meet the community</a>
+    </div>
+    <div aria-hidden="true">
+      <svg class="art" viewBox="0 0 400 360"><path d="M30 260c60-120 140 40 200-60s100-120 150-60v100c-60 60-140 0-200 60s-110 20-150-40z" fill="#00857d"/><circle cx="190" cy="150" r="55" fill="none" stroke="#006269" stroke-width="6"/><path d="M130 320c0-70 120-70 120 0" fill="none" stroke="#006269" stroke-width="6"/><path d="M330 40l8 20 20 8-20 8-8 20-8-20-20-8 20-8z" fill="#ffa600"/></svg>
+    </div>
+  </div></section>
+  <Wave from="#f0e8c6" to="#f8f3dd" />
+
+  <section class="solutions sec" style="padding-top:1rem"><div class="wrap">
+    <h2>Ways to get started</h2>
+    <div class="band" aria-hidden="true"></div>
+    <div class="cols">
+      <div><Sparkle /><h3>Digital story</h3><p>Make four choices and see where they lead. Every wrong turn is a chance to learn.</p><a class="btn" href="/story">Start playing</a></div>
+      <div><Sparkle color="#00857d" /><h3>Recommended videos</h3><p>Short, honest videos on bullying, privacy, screen time and more.</p><a class="btn" href="/videos">Watch now</a></div>
+      <div><Sparkle /><h3>Community</h3><p>Share what worked for your family and see what worked for others.</p><a class="btn" href="/community">Join in</a></div>
+    </div>
+  </div></section>
+  <Wave from="#f8f3dd" to="#006269" />
+</Layout>
