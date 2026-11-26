@@ -1,0 +1,105 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Wave from '../components/Wave.astro';
+import Sparkle from '../components/Sparkle.astro';
+const perks = [
+  ['Every story, past and present', 'Play the current interactive story and all the previous ones.'],
+  ['Premium badge', 'Show it next to your name on the Community page.'],
+  ['Early discounts', 'Get first access and better prices on Eudae products.'],
+  ['Your own article', 'We write a custom article for you, or you submit yours.'],
+];
+---
+<Layout title="Prices">
+  <section class="pagehead"><div class="wrap">
+    <h1>Unlock every story</h1>
+    <p>Playing is free. Premium opens the whole library and a few extras for you and your family.</p>
+  </div></section>
+  <Wave from="#00857d" to="#f0e8c6" />
+
+  <section class="pr-premium"><div class="wrap pr-grid">
+    <div class="pr-plan">
+      <p class="pr-name">Eudae Premium</p>
+      <p class="pr-price">29 <span>AED / month</span></p>
+      <p>Cancel any time.</p>
+      <a class="btn" href="#join">Go Premium</a>
+      <p class="pr-free">Not ready? The current story, videos and community are always free.</p>
+    </div>
+    <div>
+      <h2>What you get</h2>
+      <ul class="pr-perks">
+        {perks.map(([t, d]) => (
+          <li><Sparkle size={28} /><div><h3>{t}</h3><p>{d}</p></div></li>
+        ))}
+      </ul>
+    </div>
+  </div></section>
+  <Wave from="#f0e8c6" to="#f8f3dd" />
+
+  <section class="pr-shop"><div class="wrap">
+    <h2>From the Eudae shelf</h2>
+    <div class="pr-items">
+      <article class="pr-item">
+        <div class="pr-book" aria-hidden="true"><span>Eudae</span></div>
+        <div>
+          <h3>The Eudae book</h3>
+          <p>A printed, bound book of the stories. Great to read together.</p>
+          <p class="pr-cost">30 AED</p>
+          <p class="pr-note">Premium members get an early discount.</p>
+          <a class="btn alt" href="#join">Get the book</a>
+        </div>
+      </article>
+      <article class="pr-item">
+        <div class="pr-book pr-merch" aria-hidden="true"><span>?</span></div>
+        <div>
+          <h3>Merch</h3>
+          <p>Stickers, totes and more are on the way. Premium members hear first.</p>
+          <p class="pr-cost">Coming soon</p>
+          <a class="btn alt" href="#join">Join the waitlist</a>
+        </div>
+      </article>
+    </div>
+  </div></section>
+  <Wave from="#f8f3dd" to="#006269" />
+
+  <section class="pr-join" id="join"><div class="wrap">
+    <h2>Be first in line</h2>
+    <p>Leave your email and we'll let you know when Premium, the book and merch open.</p>
+    <form onsubmit="event.preventDefault();this.querySelector('output').textContent='Thanks! You are on the list.'">
+      <label for="em">Email</label>
+      <div class="pr-row"><input id="em" type="email" required /><button class="btn">Notify me</button></div>
+      <output role="status"></output>
+    </form>
+  </div></section>
+
+  <style>
+    .pr-premium{background:var(--cream);padding:3rem 0}
+    .pr-grid{display:grid;grid-template-columns:5fr 6fr;gap:3rem;align-items:center}
+    .pr-plan{background:var(--teal-dark);color:var(--cream);border-radius:28px 28px 80px 28px;padding:2.5rem}
+    .pr-name{color:var(--orange);font-weight:600}
+    .pr-price{font-family:var(--display);font-size:5rem;line-height:1;margin:.5rem 0}
+    .pr-price span{font-family:var(--body);font-size:1.1rem}
+    .pr-plan .btn{margin:1.2rem 0}
+    .pr-free{font-size:.95rem;opacity:.85}
+    .pr-premium h2{color:var(--teal-dark);margin-bottom:1rem}
+    .pr-perks{list-style:none;padding:0;display:grid;gap:1.2rem}
+    .pr-perks li{display:flex;gap:1rem;align-items:flex-start}
+    .pr-perks svg{flex:none;margin-top:.3rem}
+    .pr-perks h3{font-size:1.4rem;color:var(--teal-dark)}
+    .pr-shop{background:var(--cream-soft);padding:3rem 0}
+    .pr-shop h2{color:var(--teal-dark);margin-bottom:1.5rem}
+    .pr-items{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+    .pr-item{display:flex;gap:1.5rem;align-items:center;border:2px solid var(--teal);border-radius:20px;padding:1.5rem;background:var(--cream)}
+    .pr-item h3{color:var(--teal-dark)}
+    .pr-item p{margin:.4rem 0}
+    .pr-cost{font-family:var(--display);font-size:2rem;color:var(--teal)}
+    .pr-note{font-size:.9rem}
+    .pr-book{flex:none;width:110px;height:150px;background:var(--teal);border-radius:6px 14px 14px 6px;border-left:12px solid var(--teal-dark);display:grid;place-items:center;color:var(--orange);font-family:var(--display);font-size:1.6rem;box-shadow:6px 6px 0 var(--orange)}
+    .pr-merch{background:var(--orange);color:var(--teal-dark);border-left-color:#e09400;box-shadow:6px 6px 0 var(--teal)}
+    .pr-join{background:var(--teal-dark);color:var(--cream);padding:1rem 0 4rem}
+    .pr-join h2{color:var(--orange);margin-bottom:.6rem}
+    .pr-join .wrap{max-width:640px}
+    .pr-row{display:flex;gap:.8rem}
+    .pr-join output{display:block;margin-top:.8rem;color:var(--orange)}
+    @media(max-width:850px){.pr-grid,.pr-items{grid-template-columns:1fr}.pr-item{flex-direction:column;align-items:flex-start}}
+  </style>
+</Layout>
